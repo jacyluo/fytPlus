@@ -1,4 +1,4 @@
-module github.com/jacyluo/fyt-Plus
+module github.com/jacyluo/fytPlus
 
 go 1.17
 
