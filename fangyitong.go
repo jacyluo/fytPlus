@@ -269,7 +269,7 @@ func (e *FangYiTong) GetRedirectUrl(c *RedirectUrlReq, model *FytRes) error {
 		return err
 	} else {
 		if err = json.Unmarshal(res, &model); err != nil {
-			return errstatus
+			return err
 		}
 		if model.Code != 200 {
 			return errors.New(model.Msg)
