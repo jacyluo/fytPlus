@@ -71,6 +71,12 @@ type OcrReq struct {
 	Url  string `json:"url" vd:"regexp('^http(s)?://.{8,}$');msg:sprintf('参数url无效')"`
 }
 
+type RedirectUrlReq struct {
+	State  string `json:"state" comment:"会直接返回给客户"`
+	Attach string `json:"attach" comment:"客户回调URL别名"`
+	Scope  string `json:"scope" comment:"snsapi_base | snsapi_userinfo"`
+}
+
 //type UpTokenGetRes struct {
 //	RequestId string `json:"requestId"`
 //	Code      int    `json:"code"`
@@ -241,6 +247,25 @@ func (e *FangYiTong) Ocr(req *OcrReq, model *FytRes) error {
 	body, _ := json.Marshal(*req)
 
 	if res, err := utils.Client("POST", url, body, e.SetHeader()); err != nil {
+		return err
+	} else {
+		if err = json.Unmarshal(res, &model); err != nil {
+			return err
+		}
+		if model.Code != 200 {
+			return errors.New(model.Msg)
+		}
+	}
+	return nil
+}
+
+// GetRedirectUrl 获取上传图片凭证
+func (e *FangYiTong) GetRedirectUrl(c *RedirectUrlReq, model *FytRes) error {
+	url := e.ApiUrl + "/api/v1/public/wechatMp/getRedirectURL?state=%s&attach=%s&scope=%s"
+	url = fmt.Sprintf(url, c.State, c.Attach, c.Scope)
+	body, _ := json.Marshal(c)
+
+	if res, err := utils.Client("GET", url, body, e.SetHeader()); err != nil {
 		return err
 	} else {
 		if err = json.Unmarshal(res, &model); err != nil {
