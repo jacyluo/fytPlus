@@ -11,8 +11,9 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.GET("/", GetDirectUrl)
-	r.Run(":8000")
+	r.GET("/getDirectUrl", GetDirectUrl)
+	r.GET("/aiAddress", AiAddress)
+	r.Run(":7999")
 }
 
 type FangYiTong struct {
@@ -86,5 +87,39 @@ func GetDirectUrl(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": res,
 		//"config": conf,
+	})
+}
+
+func AiAddress(c *gin.Context) {
+	var conf Config
+	err := GetConfig(&conf)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	fyt := fytPlus.FangYiTong{
+		ApiUrl: conf.FangYiTong.ApiUrl,
+		Appid:  conf.FangYiTong.Appid,
+		Key:    conf.FangYiTong.Key,
+		Token:  conf.FangYiTong.Token,
+	}
+	var res fytPlus.AiAddressRes
+
+	req := fytPlus.AiAddressReq{
+		Text: "福建省福州市鼓楼区温泉街道温泉公园路28号温泉社区综合服务中心二层壹心会计 小江 18650732148",
+	}
+
+	err = fyt.AiAddress(&req, &res)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": res,
 	})
 }
