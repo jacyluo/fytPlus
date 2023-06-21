@@ -43,8 +43,10 @@ type FytRes struct {
 }
 
 type PicTokenGetReq struct {
-	List []string `json:"list" vd:"range($,regexp('^.*?\\.(?i)(jpg|gif|png|jpeg)$',#v)); msg:sprintf('图片文件名无效')"`
-	Flag string   `json:"flag"`
+	Domain string   `json:"domain" vd:"chkUrl($); msg:sprintf('invalid domain')"`
+	Bucket string   `json:"bucket" vd:"regexp('^\\w[-\\w]{2,}$'); msg:sprintf('invalid bucket')"`
+	List   []string `json:"list" vd:"range($,regexp('^.*?\\.(?i)(jpg|gif|png|jpeg)$',#v)); msg:sprintf('图片文件名无效')"`
+	//Flag string   `json:"flag"`
 }
 
 type PicNotifyReq struct {
